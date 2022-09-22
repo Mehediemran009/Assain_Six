@@ -5,13 +5,13 @@ const countdownOverlay = document.getElementById("countdown");
 const resultModal = document.getElementById("result");
 const modalBackground = document.getElementById("modal-background");
 
-// variables
+
 let userText = "";
 let errorCount = 0;
 let startTime;
 let questionText = "";
 
-// Load and display question
+
 fetch("./texts.json")
   .then((res) => res.json())
   .then((data) => {
@@ -19,33 +19,30 @@ fetch("./texts.json")
     question.innerText = questionText;
   });
 
-// checks the user typed character and displays accordingly
+
 const typeController = (e) => {
   const newLetter = e.key;
-  // console.log(e.key);
-
-  // Handle backspace press
+ 
   if (newLetter == "Backspace") {
     userText = userText.slice(0, userText.length - 1);
     return display.removeChild(display.lastChild);
   }
 
-  // these are the valid character we are allowing to type
+
   const validLetters =
     "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ 1234567890!@#$%^&*()_+-={}[]'\".,?";
 
-  // if it is not a valid character like Control/Alt then skip displaying anything
+  
   if (!validLetters.includes(newLetter)) {
-    // console.log(validLetters);
+  
     return;
   }
 
   userText += newLetter;
-  // console.log(userText);
+  
 
   const newLetterCorrect = validate(newLetter);
-  // console.log(newLetterCorrect);
-
+ 
   if (newLetterCorrect) {
     display.innerHTML += `<span class="green">${newLetter === " " ? "▪" : newLetter}</span>`;
   } else {
@@ -53,7 +50,7 @@ const typeController = (e) => {
     errorCount++
   }
 
-  // check if given question text is equal to user typed text
+ 
   if (questionText === userText) {
     gameOver();
   }
@@ -66,23 +63,22 @@ const validate = (key) => {
   return false;
 };
 
-// FINISHED TYPING
+
 const gameOver = () => {
   document.removeEventListener("keydown", typeController);
-  // the current time is the finish time
-  // so total time taken is current time - start time
+  
   const finishTime = new Date().getTime();
   const timeTaken = (finishTime - startTime) / 1000;
 
-  // show result modal
+ 
   resultModal.innerHTML = "";
   resultModal.classList.toggle("hidden");
   modalBackground.classList.toggle("hidden");
-  // clear user text
+ 
   display.innerHTML = "";
-  // make it inactive
+
   display.classList.add("inactive");
-  // show result
+
   resultModal.innerHTML += `
     <h1>Finished!</h1>
     <p>You took: <span class="bold">${Math.round(timeTaken)}</span> seconds</p>
@@ -92,7 +88,7 @@ const gameOver = () => {
 
   addHistory(questionText, timeTaken, errorCount);
 
-  // restart everything
+
   startTime = null;
   errorCount = 0;
   userText = "";
@@ -105,7 +101,7 @@ const closeModal = () => {
 };
 
 const start = () => {
-  // If already started, do not start again
+ 
   if (startTime) return;
 
   let count = 3;
@@ -114,9 +110,9 @@ const start = () => {
   const startCountdown = setInterval(() => {
     countdownOverlay.innerHTML = `<h1>${count}</h1>`;
     
-    // finished timer
+ 
     if (count === 0) {
-      // -------------- START TYPING -----------------
+      
       document.addEventListener("keydown", typeController);
       countdownOverlay.style.display = "none";
       display.classList.remove("inactive");
@@ -128,14 +124,13 @@ const start = () => {
   }, 1000);
 };
 
-// START Countdown
-// console.log(startBtn);
+
 startBtn.addEventListener("click", start);
 
-// If history exists, show it
+
 displayHistory();
 
-// Show typing time spent
+
 setInterval(() => {
   const currentTime = new Date().getTime();
   const timeSpent = (currentTime - startTime) / 1000;
